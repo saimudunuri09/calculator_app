@@ -37,9 +37,9 @@ jobs:
             choiceType('SINGLE_SELECT')
             groovyScript {
               script('''
-                if (ENVIRONMENT == "dev1") return ["192.168.68.125:5000"]
-                if (ENVIRONMENT == "dev2") return ["192.168.68.126:5000"]
-                if (ENVIRONMENT == "dev3") return ["192.168.68.127:5000"]
+                if (ENVIRONMENT == "dev1") return ["localhost:5001"]
+                if (ENVIRONMENT == "dev2") return ["localhost:5002"]
+                if (ENVIRONMENT == "dev3") return ["localhost:5003"]
                 return ["unknown"]
               ''')
               fallbackScript('["unknown"]')
