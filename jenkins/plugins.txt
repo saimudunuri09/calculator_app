@@ -1,7 +1,7 @@
 workflow-aggregator
 git
 job-dsl
-active-choices
+uno-choice
 credentials-binding
 pipeline-stage-step
 pipeline-utility-steps
