@@ -8,7 +8,10 @@ USER root
 
 # Install Python + pip + venv + Docker CLI
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip python3-venv docker.io && \
+    python3-full \
+    python3-pip \
+    python3-venv \
+    docker.io && \
     groupadd -f docker && \
     usermod -aG docker jenkins && \
     chmod 666 /var/run/docker.sock || true && \
