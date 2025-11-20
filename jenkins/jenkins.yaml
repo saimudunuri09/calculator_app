@@ -44,7 +44,8 @@ jobs:
               ''')
               fallbackScript('["unknown"]')
             }
-            referencedParameters(['ENVIRONMENT'])
+            referencedParameter('ENVIRONMENT')
+
 
 
           }
