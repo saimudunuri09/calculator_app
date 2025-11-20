@@ -17,11 +17,8 @@ jobs:
 
         description("CI/CD Pipeline with Active & Reactive Choices")
 
-        // -------------------------------
-        // PARAMETERS: ACTIVE CHOICE + REACTIVE CHOICE
-        // -------------------------------
         parameters {
-          
+
           activeChoiceParam('ENVIRONMENT') {
             description('Select the environment to deploy to')
             filterable()
@@ -33,7 +30,7 @@ jobs:
           }
 
           activeChoiceReactiveParam('SERVER_URL') {
-            description('Auto-selects server URL based on environment')
+            description('Auto-selects localhost port based on environment')
             choiceType('SINGLE_SELECT')
             groovyScript {
               script('''
@@ -45,15 +42,9 @@ jobs:
               fallbackScript('["unknown"]')
             }
             referencedParameter('ENVIRONMENT')
-
-
-
           }
         }
 
-        // -------------------------------
-        // SOURCE: GITHUB
-        // -------------------------------
         definition {
           cpsScm {
             scm {
@@ -68,9 +59,6 @@ jobs:
           }
         }
 
-        // -------------------------------
-        // TRIGGER: ONLY FROM GITHUB WEBHOOK
-        // -------------------------------
         triggers {
           githubPush()
         }

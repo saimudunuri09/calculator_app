@@ -1,40 +1,70 @@
-stage('Deploy') {
-    steps {
-        script {
-            echo "Deploying to ${ENVIRONMENT}"
+pipeline {
+    agent any
 
-            // Map environment to port + container name
-            def PORT = ""
-            def CONTAINER_NAME = ""
+    stages {
 
-            if (ENVIRONMENT == "dev1") {
-                PORT = "5001"
-                CONTAINER_NAME = "calculator-dev1"
+        stage('Checkout Code') {
+            steps {
+                git branch: 'master', url: 'https://github.com/saimudunuri09/calculator_app.git'
             }
-            else if (ENVIRONMENT == "dev2") {
-                PORT = "5002"
-                CONTAINER_NAME = "calculator-dev2"
-            }
-            else if (ENVIRONMENT == "dev3") {
-                PORT = "5003"
-                CONTAINER_NAME = "calculator-dev3"
-            }
-            else {
-                error "Invalid environment selected!"
-            }
+        }
 
-            sh """
-                docker stop ${CONTAINER_NAME} || true
-                docker rm ${CONTAINER_NAME} || true
-                docker run -d -p ${PORT}:5000 --name ${CONTAINER_NAME} calculator-app
-            """
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt || pip3 install -r requirements.txt'
+            }
+        }
 
-            echo "========================================="
-            echo " 🚀 DEPLOYMENT SUCCESSFUL"
-            echo "========================================="
-            echo "Environment     : ${ENVIRONMENT}"
-            echo "App Running At  : http://localhost:${PORT}"
-            echo "========================================="
+        stage('Run Tests') {
+            steps {
+                sh 'pytest -v'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t calculator-app .'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "Deploying to ${ENVIRONMENT}"
+
+                    def PORT = ""
+                    def CONTAINER_NAME = ""
+
+                    if (ENVIRONMENT == "dev1") {
+                        PORT = "5001"
+                        CONTAINER_NAME = "calculator-dev1"
+                    }
+                    else if (ENVIRONMENT == "dev2") {
+                        PORT = "5002"
+                        CONTAINER_NAME = "calculator-dev2"
+                    }
+                    else if (ENVIRONMENT == "dev3") {
+                        PORT = "5003"
+                        CONTAINER_NAME = "calculator-dev3"
+                    }
+                    else {
+                        error "Invalid environment selected!"
+                    }
+
+                    sh """
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                        docker run -d -p ${PORT}:5000 --name ${CONTAINER_NAME} calculator-app
+                    """
+
+                    echo "========================================="
+                    echo " 🚀 DEPLOYMENT SUCCESSFUL"
+                    echo "========================================="
+                    echo "Environment     : ${ENVIRONMENT}"
+                    echo "App Running At  : http://localhost:${PORT}"
+                    echo "========================================="
+                }
+            }
         }
     }
 }
