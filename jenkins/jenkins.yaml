@@ -1,0 +1,74 @@
+jenkins:
+  systemMessage: "Calculator App CI — Fully automated"
+
+  securityRealm:
+    local:
+      users:
+        - id: "admin"
+          password: "admin123"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: true
+
+jobs:
+  - script: >
+      pipelineJob('calculator-app-ci') {
+
+        description("CI/CD Pipeline with Active & Reactive Choices")
+
+        // -------------------------------
+        // PARAMETERS: ACTIVE CHOICE + REACTIVE CHOICE
+        // -------------------------------
+        parameters {
+          
+          activeChoiceParam('ENVIRONMENT') {
+            description('Select the environment to deploy to')
+            filterable()
+            choiceType('SINGLE_SELECT')
+            groovyScript {
+              script('["dev1", "dev2", "dev3"]')
+              fallbackScript('["dev1"]')
+            }
+          }
+
+          activeChoiceReactiveParam('SERVER_URL') {
+            description('Auto-selects server URL based on environment')
+            choiceType('SINGLE_SELECT')
+            groovyScript {
+              script('''
+                if (ENVIRONMENT == "dev1") return ["192.168.68.125:5000"]
+                if (ENVIRONMENT == "dev2") return ["192.168.68.126:5000"]
+                if (ENVIRONMENT == "dev3") return ["192.168.68.127:5000"]
+                return ["unknown"]
+              ''')
+              fallbackScript('["unknown"]')
+            }
+            referencedParameters('ENVIRONMENT')
+          }
+        }
+
+        // -------------------------------
+        // SOURCE: GITHUB
+        // -------------------------------
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/saimudunuri09/calculator_app.git')
+                }
+                branches('*/master')
+              }
+            }
+            scriptPath('jenkins/Jenkinsfile')
+          }
+        }
+
+        // -------------------------------
+        // TRIGGER: ONLY FROM GITHUB WEBHOOK
+        // -------------------------------
+        triggers {
+          githubPush()
+        }
+      }
