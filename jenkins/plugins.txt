@@ -1,7 +1,10 @@
-workflow-aggregator
-git
-job-dsl
 uno-choice
+job-dsl
+configuration-as-code
+git
+github
+workflow-aggregator
+ssh-agent
+docker-workflow
+credentials
 credentials-binding
-pipeline-stage-step
-pipeline-utility-steps
